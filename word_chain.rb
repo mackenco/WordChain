@@ -14,39 +14,38 @@ class WordChain
     current_words = [start]
     adjacents = []
     found = false
-    paths = {}
-    paths[start] = nil
+    paths = {[start] => nil }
+    #paths[start] = nil
     visited_words = []
-    path = [finish]
 
     until found
       found = false
       current_words.each do |word|
         next if visited_words.include?(word)
         visited_words << word
-
         adjacents = adjacent_words(word)
 
-        adjacents.each do |adj|
-          next if visited_words.include?(adj)
-          word_in_two = adjacent_words(adj)
-          if word_in_two.include?(finish)
-            found = true
-          end
-          current_words << adj
-          paths[adj] = word
-        end
+        if adjacents.include?(finish)
+          found = true
+          paths[finish] = word
 
+        else
+
+          adjacents.each do |adj|
+              next if visited_words.include?(adj)
+              word_in_two = adjacent_words(adj)
+              if word_in_two.include?(finish)
+                found = true
+              end
+            current_words << adj
+            paths[adj] = word
+          end
+
+        end
       end
     end
 
-    target = finish
-    until paths[target].nil?
-      prev_word = paths[target]
-      path << prev_word
-      target = prev_word
-    end
-    path.reverse
+    build_path(paths, finish)
   end
 
   def load_dictionary(dict_path)
@@ -81,14 +80,14 @@ class WordChain
     end
   end
 
-  def make_target_words(start, finish)
-    [].tap do |target_words|
-      start.length.times do |index|
-        temp_start = start.dup
-        temp_start[index] = finish[index]
-        target_words << temp_start
-      end
-    end.uniq.reject{|word| word == start}
+  def build_path(paths, target)
+    path = [target]
+    until paths[target].nil?
+      prev_word = paths[target]
+      path << prev_word
+      target = prev_word
+    end
+    path.reverse
   end
 end
 

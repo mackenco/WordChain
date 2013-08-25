@@ -119,7 +119,6 @@ if __FILE__ == $0
   # p word_chain('rank','dank')
   # p word_chain('dank','ruby')
   p word_chain('duck','lube')
-  # p word_chain('duck','ruby')
 
 end
 

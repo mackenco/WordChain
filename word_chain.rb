@@ -8,14 +8,45 @@ class WordChain
     @dictionary = load_dictionary(dictionary)
   end
 
-  def word_chain(start, finish)
+  def find_chain(start, finish)
     @dictionary = filter_dict_by_length(start.length)
 
     current_words = [start]
-    adjacent_words = []
+    adjacents = []
+    found = false
+    paths = {}
+    paths[start] = nil
+    visited_words = []
+    path = [finish]
 
-    #current_words.each do |word| end
+    until found
+      found = false
+      current_words.each do |word|
+        next if visited_words.include?(word)
+        visited_words << word
 
+        adjacents = adjacent_words(word)
+
+        adjacents.each do |adj|
+          next if visited_words.include?(adj)
+          word_in_two = adjacent_words(adj)
+          if word_in_two.include?(finish)
+            found = true
+          end
+          current_words << adj
+          paths[adj] = word
+        end
+
+      end
+    end
+
+    target = finish
+    until paths[target].nil?
+      prev_word = paths[target]
+      path << prev_word
+      target = prev_word
+    end
+    path.reverse
   end
 
   def load_dictionary(dict_path)
@@ -64,6 +95,6 @@ end
 
 if __FILE__ == $0
   word_chain = WordChain.new('dictionary.txt')
-  p word_chain.make_regex_array("word")
+  p word_chain.find_chain("duck", "ruby")
 end
 
